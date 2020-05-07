@@ -1,6 +1,7 @@
 package com.jay.apis.libraryapi.publisher;
 
 import com.jay.apis.libraryapi.exception.LibraryResourceALreadyExistException;
+import com.jay.apis.libraryapi.exception.LibraryResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +15,20 @@ public class PublishController {
     private PublisherService publisherService;
 
     @GetMapping(path = "/{publisherId}")
-    public Publisher getPublisher(@PathVariable Integer publisherId) {
-        return new Publisher(publisherId, "Book Publisher", "test@publisher.com", "123-456-789");
+    public ResponseEntity<?> getPublisher(@PathVariable Integer publisherId) {
+        Publisher publisher = null;
+        try {
+            publisher = publisherService.getPublisher(publisherId);
+        } catch (LibraryResourceNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity(publisher, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<?> addPublisher(@RequestBody Publisher publisher) {
         try {
-            publisher = publisherService.addPublisher(publisher);
+            publisherService.addPublisher(publisher);
         } catch (LibraryResourceALreadyExistException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
         }
