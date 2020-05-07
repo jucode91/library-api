@@ -1,6 +1,8 @@
 package com.jay.apis.libraryapi.publisher;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -8,6 +10,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "PUBLISHER")
 @Getter
+@NoArgsConstructor
 public class PublisherEntity {
 
     @Column(name = "publisher_id")
