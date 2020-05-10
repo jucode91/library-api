@@ -6,6 +6,7 @@ import com.jay.apis.libraryapi.util.LibraryApiUtils;
 import lombok.AllArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -85,5 +86,13 @@ public class PublisherService {
                 publisher.getEmailId(),
                 publisher.getPhoneNumber()
         );
+    }
+
+    public void deletePublisher(Integer publisherId) throws LibraryResourceNotFoundException {
+        try {
+            publisherRepository.deleteById(publisherId);
+        }catch (EmptyResultDataAccessException ex){
+            throw new LibraryResourceNotFoundException("Publisher Id :" + publisherId + " Not Found");
+        }
     }
 }
