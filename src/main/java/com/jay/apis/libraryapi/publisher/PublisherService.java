@@ -7,8 +7,12 @@ import lombok.AllArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -62,11 +66,11 @@ public class PublisherService {
         if (publisherEntity.isPresent()) {
             PublisherEntity publisherEntityToBeUpdated = publisherEntity.get();
 
-            if(LibraryApiUtils.doesStingValueExist(publisherToBeUpdated.getEmailId())){
+            if (LibraryApiUtils.doesStingValueExist(publisherToBeUpdated.getEmailId())) {
                 publisherEntityToBeUpdated.setEmailId(publisherToBeUpdated.getEmailId());
             }
 
-            if(LibraryApiUtils.doesStingValueExist(publisherToBeUpdated.getPhoneNumber())){
+            if (LibraryApiUtils.doesStingValueExist(publisherToBeUpdated.getPhoneNumber())) {
                 publisherEntityToBeUpdated.setPhoneNumber(publisherToBeUpdated.getPhoneNumber());
             }
 
@@ -78,12 +82,37 @@ public class PublisherService {
     }
 
 
-
     private PublisherEntity createPublisherEntityFromPublisher(Publisher publisher) {
         return new PublisherEntity(
                 publisher.getName(),
                 publisher.getEmailId(),
                 publisher.getPhoneNumber()
         );
+    }
+
+    public List<Publisher> searchPublisher(String name) {
+        List<PublisherEntity> publisherEntities = null;
+
+        if (LibraryApiUtils.doesStingValueExist(name)) {
+            publisherEntities = publisherRepository.findByNameContaining(name);
+        }
+
+        if (!CollectionUtils.isEmpty(publisherEntities)) {
+            return createPublisherForSearchResponse(publisherEntities);
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private List<Publisher> createPublisherForSearchResponse(List<PublisherEntity> publisherEntities) {
+        return publisherEntities
+                .stream()
+                .map(publisherEntity -> createPublisherFromEntity(publisherEntity))
+                .collect(Collectors.toList());
+    }
+
+    public List<Publisher> getPublishers() {
+        List<PublisherEntity> publisherEntities = (List<PublisherEntity>) publisherRepository.findAll();
+        return createPublisherForSearchResponse(publisherEntities);
     }
 }
