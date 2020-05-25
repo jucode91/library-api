@@ -1,15 +1,14 @@
 package com.jay.apis.libraryapi.exception;
 
-public class LibraryResourceNotFoundException extends Throwable {
-
+public class LibraryResourceAlreadyExistException extends RuntimeException   {
     private String traceId;
 
-    public LibraryResourceNotFoundException(String traceId, String message) {
+    public LibraryResourceAlreadyExistException(String traceId, String message) {
         super(message);
         this.traceId = traceId;
     }
 
-    public LibraryResourceNotFoundException(String message) {
+    public LibraryResourceAlreadyExistException(String message) {
         super(message);
     }
 
